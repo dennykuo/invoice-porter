@@ -66,7 +66,8 @@ class EzpayInvoice extends AbstractInvoice
 
         // 判斷是否為轉址至平台
         if (isset($postData['DisplayFlag']) && $postData['DisplayFlag'] == 1) {
-            return self::infoRedirect($postData, $api);
+            self::infoRedirect($postData, $api);
+            die;
         }
 
         self::sendRequest($postData, $api);
