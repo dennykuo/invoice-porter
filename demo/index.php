@@ -9,6 +9,7 @@
     <ul>
         <li><a href="/demo/create.php">開立發票</a></li>
         <li><a href="/demo/info.php">查詢發票</a></li>
+        <li><a href="/demo/info-redirect.php">查詢發票 - 轉址</a></li>
         <li><a href="/demo/invalid.php">作廢發票</a></li>
     </ul>
 </body>

@@ -64,6 +64,11 @@ class EzpayInvoice extends AbstractInvoice
             'version' => '1.2',
         ];
 
+        // 判斷是否為轉址至平台
+        if (isset($postData['DisplayFlag']) && $postData['DisplayFlag'] == 1) {
+            return self::infoRedirect($postData, $api);
+        }
+
         self::sendRequest($postData, $api);
 
         return $this;
@@ -143,5 +148,33 @@ class EzpayInvoice extends AbstractInvoice
         ];
 
         parent::setResponse($rawResponse, $code = $response->status);
+    }
+
+    protected function infoRedirect($postData, $api)
+    {
+        $postData = $this->mergeCommonPostData($postData, $api['version']);
+        $postData = (new EzpayApi($this))->encryptPostData($postData);
+
+        $apiGate = $this->isProduction
+                   ? $this->config['api-gate']
+                   : $this->config['api-gate-testing'];
+        
+        $url = $apiGate . $api['uri'];
+
+echo <<<EOT
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+    </head>
+<body>
+    <form id="form" method="post" action="$url">
+        <input type="hidden" name="MerchantID_" value="$this->merchantID">
+        <input type="hidden" name="PostData_" value="$postData">
+    </form>
+    <script>document.getElementById('form').submit();</script>
+</body>
+</html>
+EOT;
     }
 }

@@ -34,7 +34,7 @@ class EzpayApi implements ApiRequest
         $response = $this->httpClient->request('post', $apiUri, [
             'form_params' => [
                 'MerchantID_' => $this->instance->merchantID,
-                'PostData_' => $this->postDataEncrypt($postData),
+                'PostData_' => $this->encryptPostData($postData),
             ],
         ]);
 
@@ -64,7 +64,7 @@ class EzpayApi implements ApiRequest
      * 
      * @return string
      */
-    private function postDataEncrypt(array $postData)
+    public function encryptPostData(array $postData)
     {
         $postDataStr = http_build_query($postData); // 轉成字串排列
         
