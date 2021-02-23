@@ -27,11 +27,12 @@ $invoice->create([
     'ItemName' => '商品一|商品二', // 多項商品時，以「|」分開
     'ItemCount' => '1|2', // 多項商品時，以「|」分開
     'ItemUnit' => '個|個', // 多項商品時，以「|」分開
-    'ItemPrice' => '300|100', // 多項商品時，以「|」分開
-    'ItemAmt' => '300|200', // 多項商品時，以「|」分開
+    'ItemPrice' => '476|100', // 多項商品時，以「|」分開，未稅價格
+    'ItemAmt' => '476|200', // 多項商品時，以「|」分開，未稅價格
     'Comment' => '備註',
 ]);
 
+// 作廢
 $invoice->invalid([
     'InvoiceNumber' => $invoice->getResult('InvoiceNumber'), // 發票號碼
     'RandomNum' => $invoice->getResult('RandomNum'), // (選擇性) 若需檢查 checkcode，需帶入

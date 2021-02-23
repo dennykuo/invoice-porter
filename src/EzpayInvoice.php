@@ -145,6 +145,7 @@ class EzpayInvoice extends AbstractInvoice
         $rawResponse = (object) [
             'raw' => $response,
             'message' => $response->message,
+            'code' => $response->status,
             'result' => $response->result,
         ];
 

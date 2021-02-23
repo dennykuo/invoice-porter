@@ -53,8 +53,9 @@ abstract class AbstractInvoice
         $this->response = (object) [
             'success' => $this->isOK($code),
             'message' => $response->message,
+            'code' => $response->code,
             'result' => $response->result,
-            'raw' => $response,
+            'raw' => $response->raw,
         ];
 
         $this->responseIsReady = true;
@@ -111,6 +112,7 @@ abstract class AbstractInvoice
                ? null
                : [
                     'message' => $this->response->message,
+                    'code' => $this->response->code
                  ];
     }
 
