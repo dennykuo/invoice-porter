@@ -33,8 +33,8 @@ $invoice->create([
     'ItemName' => '商品一', // 多項商品時，以「|」分開
     'ItemCount' => '1', // 多項商品時，以「|」分開
     'ItemUnit' => '個', // 多項商品時，以「|」分開
-    'ItemPrice' => $type == 'B2B' ? $amountRaw : $totalAmount, // 多項商品時，以「|」分開，未稅價格
-    'ItemAmt' => $type == 'B2B' ? $amountRaw : $totalAmount, // 多項商品時，以「|」分開，未稅價格
+    'ItemPrice' => $type == 'B2B' ? $amountRaw : $totalAmount, // 多項商品時，以「|」分開，若三聯式須為稅前價格
+    'ItemAmt' => $type == 'B2B' ? $amountRaw : $totalAmount, // 多項商品時，以「|」分開，若三聯式須為稅前價格
     'Comment' => '備註',
 ]);
 
