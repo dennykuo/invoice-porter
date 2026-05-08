@@ -76,6 +76,12 @@ tests/
 
 > 原則：**先把第二家完整跑通**（包含全部端點、全部 enum、加解密、CheckCode、Feature test），**再回頭看哪些抽象真的有重複**，再決定是否往 `InvoicePorter\` 上層抽出。先抽再實作幾乎一定會抽錯方向。
 
+### 但書：同一廠商內部多產品線可重用
+
+上表規範僅針對**跨廠商**抽象。藍新內部既有「電子發票」（`EzpayInvoiceClient`）也有「電子發票字軌管理」（`EzpayTrackClient`），它們的加密演算法、CheckCode 演算法、HTTP envelope 結構幾乎完全相同，只差金鑰與第一個欄位名（`MerchantID_` vs `CompanyID_`）。**這種「同廠商不同產品線」共用 `Crypto\AesCryptor` / `Crypto\SignatureVerifier` / `Http\EzpayHttpClient` / `Environment` 是合理重用，不違反上述禁止項目。**
+
+判斷準則：抽象的根在 `InvoicePorter\<Vendor>\…` 層級內就 OK；只要不被往 `InvoicePorter\` 頂層抽（強迫各廠商共用）即可。
+
 ## 各家**獨立實作**清單
 
 下列項目每家廠商都要重寫：

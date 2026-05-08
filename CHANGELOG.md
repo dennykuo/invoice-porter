@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-首次發布前的整備版本。涵蓋藍新 EZPay 全部 7 個發票 / 折讓端點，並預留多廠商擴充空間（綠界 ECPay、歐付寶 O'Pay、紅陽 Pay2Go 等）。
+首次發布前的整備版本。涵蓋藍新 EZPay 全部 7 個發票 / 折讓端點 + 3 個字軌管理端點，並預留多廠商擴充空間（綠界 ECPay、歐付寶 O'Pay、紅陽 Pay2Go 等）。
 
 ### 端點覆蓋（EZP_INVI_1.2.2，2024-04-22）
 
@@ -18,6 +18,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `allowance_issue`（v1.3）
 - `allowance_touch_issue`（v1.0）
 - `allowanceInvalid`（v1.0）
+
+### 字軌管理（EZP_Track_1.0.0，2018-10-03）
+
+- `Api_number_management/createNumber`（v1.0）— 新增字軌
+- `Api_number_management/manageNumber`（v1.0）— 字軌資料管理（變更狀態旗標）
+- `Api_number_management/searchNumber`（v1.0）— 字軌資料查詢
+- 新增 `EzpayTrackClient` facade（與 `EzpayInvoiceClient` 平級）
+- 新增 `Enums\InvoiceTerm`（雙月期別）/ `Enums\TrackFlag`（字軌狀態）
+- `EzpayConfig` 加 nullable `companyId` / `companyHashKey` / `companyHashIv` 三欄；既有發票欄位完全向後相容
+- `EzpayConfig::fromEnv()` 同步讀 `EZPAY_COMPANY_ID` / `EZPAY_COMPANY_HASH_KEY` / `EZPAY_COMPANY_HASH_IV`
+- 加密 / CheckCode 演算法與發票完全相同，重用 `Crypto\AesCryptor` / `Crypto\SignatureVerifier` / `Http\EzpayHttpClient` 零修改
 
 ### 主要功能
 
@@ -37,15 +48,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 工程
 
-- 95 支單元 + 功能測試（含 Crypto、Enum、Request DTO 驗證、Client feature test、錯誤碼對映）
+- 95 支發票 + ~32 支字軌單元 / 功能測試（含 Crypto、Enum、Request DTO 驗證、Client feature test、錯誤碼對映）
 - PHPStan **level 10**、PHP-CS-Fixer（PSR-12 + `declare_strict_types`）
 - GitHub Actions CI matrix（PHP 8.1 / 8.2 / 8.3）
-- `demo/` 8 支獨立範例（`01-issue` … `08-search-redirect`）+ `.env.example`
+- `demo/` 11 支獨立範例（`01-issue` … `08-search-redirect` 為發票，`09-track-create` … `11-track-search` 為字軌）+ `.env.example`
 
 ### 文件
 
-- `README.md` — 設定、快速開始、7 端點使用範例、進階情境（B2B / 載具 / 捐贈 / 延遲開立 / 混合稅率）、CheckCode 策略、錯誤處理
-- `docs/ezpay-api-mapping.md` — 藍新文件 vs SDK 對照表（升版用速查）
+- `README.md` — 設定、快速開始、發票 7 端點與字軌 3 端點使用範例、進階情境（B2B / 載具 / 捐贈 / 延遲開立 / 混合稅率）、CheckCode 策略、錯誤處理
+- `docs/ezpay-api-mapping.md` — 藍新發票文件 vs SDK 對照表（升版用速查）
+- `docs/ezpay-track-api-mapping.md` — 藍新字軌文件 vs SDK 對照表
 - `docs/extending.md` — 新廠商擴充指南
 
 ### 系統需求

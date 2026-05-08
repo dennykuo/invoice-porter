@@ -1,6 +1,6 @@
 {
     "name": "dennykuo/invoice-porter",
-    "description": "台灣電子發票串接 PHP SDK，目前支援藍新（NewebPay/EZPay）",
+    "description": "台灣電子發票串接 PHP SDK，目前支援藍新（NewebPay/EZPay）發票與字軌管理",
     "type": "library",
     "license": "MIT",
     "keywords": [
@@ -11,8 +11,10 @@
         "einvoice",
         "taiwan",
         "taiwan-einvoice",
+        "track",
         "藍新",
-        "電子發票"
+        "電子發票",
+        "字軌"
     ],
     "authors": [
         {

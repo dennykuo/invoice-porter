@@ -12,12 +12,14 @@ use InvoicePorter\Ezpay\Enums\CustomsClearance;
 use InvoicePorter\Ezpay\Enums\DisplayFlag;
 use InvoicePorter\Ezpay\Enums\InvoiceLifecycleStatus;
 use InvoicePorter\Ezpay\Enums\InvoiceStatus;
+use InvoicePorter\Ezpay\Enums\InvoiceTerm;
 use InvoicePorter\Ezpay\Enums\InvoiceType;
 use InvoicePorter\Ezpay\Enums\KioskPrintFlag;
 use InvoicePorter\Ezpay\Enums\PrintFlag;
 use InvoicePorter\Ezpay\Enums\RespondType;
 use InvoicePorter\Ezpay\Enums\SearchType;
 use InvoicePorter\Ezpay\Enums\TaxType;
+use InvoicePorter\Ezpay\Enums\TrackFlag;
 use InvoicePorter\Ezpay\Enums\UploadStatus;
 use PHPUnit\Framework\TestCase;
 
@@ -114,5 +116,22 @@ final class EnumValuesTest extends TestCase
     {
         $this->assertSame('JSON', RespondType::Json->value);
         $this->assertSame('String', RespondType::String->value);
+    }
+
+    public function testInvoiceTermValues(): void
+    {
+        $this->assertSame('1', InvoiceTerm::JanFeb->value);
+        $this->assertSame('2', InvoiceTerm::MarApr->value);
+        $this->assertSame('3', InvoiceTerm::MayJun->value);
+        $this->assertSame('4', InvoiceTerm::JulAug->value);
+        $this->assertSame('5', InvoiceTerm::SepOct->value);
+        $this->assertSame('6', InvoiceTerm::NovDec->value);
+    }
+
+    public function testTrackFlagValues(): void
+    {
+        $this->assertSame('0', TrackFlag::Paused->value);
+        $this->assertSame('1', TrackFlag::Active->value);
+        $this->assertSame('2', TrackFlag::Disabled->value);
     }
 }

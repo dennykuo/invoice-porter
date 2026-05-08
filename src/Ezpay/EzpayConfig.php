@@ -15,6 +15,9 @@ final class EzpayConfig
         public readonly Environment $environment = Environment::Sandbox,
         public readonly float $timeoutSeconds = 10.0,
         public readonly float $connectTimeoutSeconds = 5.0,
+        public readonly ?string $companyId = null,
+        public readonly ?string $companyHashKey = null,
+        public readonly ?string $companyHashIv = null,
     ) {
         if ($this->merchantId === '') {
             throw new EzpayValidationException('merchantId 不可為空');
@@ -34,6 +37,14 @@ final class EzpayConfig
 
         if ($this->connectTimeoutSeconds <= 0) {
             throw new EzpayValidationException('connectTimeoutSeconds 必須大於 0');
+        }
+
+        if ($companyHashKey !== null && strlen($companyHashKey) !== 32) {
+            throw new EzpayValidationException('companyHashKey 必須為 32 個字元');
+        }
+
+        if ($companyHashIv !== null && strlen($companyHashIv) !== 16) {
+            throw new EzpayValidationException('companyHashIv 必須為 16 個字元');
         }
     }
 
@@ -60,7 +71,25 @@ final class EzpayConfig
             hashKey: $hashKey,
             hashIv: $hashIv,
             environment: $environment,
+            companyId: self::readEnv($prefix . 'COMPANY_ID'),
+            companyHashKey: self::readEnv($prefix . 'COMPANY_HASH_KEY'),
+            companyHashIv: self::readEnv($prefix . 'COMPANY_HASH_IV'),
         );
+    }
+
+    /**
+     * 確認字軌 API 所需的會員（公司）層級憑證皆已設定，否則拋例外。
+     *
+     * `EzpayTrackClient` 在 constructor 呼叫此方法以早期失敗，
+     * 避免使用者只在發送 request 時才得知 config 不齊。
+     */
+    public function requireCompanyCredentials(): void
+    {
+        if ($this->companyId === null || $this->companyHashKey === null || $this->companyHashIv === null) {
+            throw new EzpayValidationException(
+                'EzpayTrackClient 需要 companyId / companyHashKey / companyHashIv 三者皆不為 null',
+            );
+        }
     }
 
     private static function readEnv(string $key): ?string

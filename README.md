@@ -5,12 +5,13 @@
 [![PHP Version](https://img.shields.io/packagist/dependency-v/dennykuo/invoice-porter/php.svg)](https://packagist.org/packages/dennykuo/invoice-porter)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-藍新（NewebPay/EZPay）電子發票 API 的 PHP SDK。覆蓋 EZP_INVI_1.2.2（2024/4/22）文件中所有發票 / 折讓相關端點，並以 type-safe 的 DTO + Enum 取代字串魔術值。
+藍新（NewebPay/EZPay）電子發票 API 的 PHP SDK。覆蓋 EZP_INVI_1.2.2（2024/4/22）所有發票 / 折讓相關端點，以及 EZP_Track_1.0.0（2018/10/3）所有字軌管理端點，並以 type-safe 的 DTO + Enum 取代字串魔術值。
 
 ## 特色
 
-- 全部 7 個官方端點：開立、觸發開立、作廢、查詢、開立折讓、觸發/取消折讓、作廢折讓
-- 16 支 backed Enum 取代字串魔術值
+- **發票 7 端點**：開立、觸發開立、作廢、查詢、開立折讓、觸發/取消折讓、作廢折讓
+- **字軌 3 端點**：新增字軌、字軌資料管理、字軌資料查詢
+- 18 支 backed Enum 取代字串魔術值
 - AES-256-CBC 加解密、CheckCode 驗證皆獨立模組可測試
 - 例外階層化：`Validation` / `Api` / `CheckCode` / `Transport`
 - HTTP 層注入點完整，可用 Guzzle MockHandler 做 feature test
@@ -93,6 +94,46 @@ echo $response->invoiceNumber();
 | 開立折讓 | `issueAllowance()` | `allowance_issue` | 1.3 |
 | 觸發/取消折讓 | `touchAllowance()` | `allowance_touch_issue` | 1.0 |
 | 作廢折讓 | `invalidAllowance()` | `allowanceInvalid` | 1.0 |
+
+## 字軌管理 API（EZP_Track_1.0.0）
+
+藍新「電子發票字軌管理」屬會員（公司）層級 API，與發票 API 用不同的金鑰與參數包裝（envelope 第一欄為 `CompanyID_` 而非 `MerchantID_`）。`EzpayConfig` 沿用同一個入口，nullable `companyId` / `companyHashKey` / `companyHashIv` 三欄需於使用字軌時提供。
+
+| 中文 | 方法 | 端點 | Version |
+|------|------|------|---------|
+| 新增字軌 | `trackCreate()` | `Api_number_management/createNumber` | 1.0 |
+| 字軌資料管理 | `trackManage()` | `Api_number_management/manageNumber` | 1.0 |
+| 字軌資料查詢 | `trackSearch()` | `Api_number_management/searchNumber` | 1.0 |
+
+```php
+use InvoicePorter\Ezpay\Enums\InvoiceTerm;
+use InvoicePorter\Ezpay\EzpayConfig;
+use InvoicePorter\Ezpay\EzpayTrackClient;
+use InvoicePorter\Ezpay\Requests\Track\TrackCreateRequest;
+
+$config = new EzpayConfig(
+    merchantId: 'YOUR_MERCHANT_ID',
+    hashKey: 'YOUR_HASH_KEY_32_CHARS_xxxxxxxxxxx',
+    hashIv: 'YOUR_IV_16_CHARS',
+    companyId: 'YOUR_COMPANY_ID',                              // 字軌專用
+    companyHashKey: 'YOUR_COMPANY_HASH_KEY_32_xxxxxxxxxxxxx',  // 字軌專用
+    companyHashIv: 'YOUR_COMPANY_IV',                          // 字軌專用
+);
+
+$client = new EzpayTrackClient($config);
+
+$response = $client->trackCreate(new TrackCreateRequest(
+    year: '115',                // 民國年三碼
+    term: InvoiceTerm::JanFeb,  // 1=一二月、2=三四月、…
+    aphabeticLetter: 'AB',      // 字軌字母（兩碼大寫）
+    startNumber: '00000000',    // 起號 8 碼
+    endNumber: '00000049',      // 訖號 8 碼
+));
+
+echo $response->managementNo();  // 新增成功後的字軌管理編號
+```
+
+> 字軌 API 詳細欄位、CheckCode 策略與錯誤碼對照請見 [`docs/ezpay-track-api-mapping.md`](docs/ezpay-track-api-mapping.md)。
 
 ## 使用範例
 
@@ -333,7 +374,8 @@ composer ci            # cs-check + stan + test
 - [`CHANGELOG.md`](CHANGELOG.md) — 版本歷程
 - [`CONTRIBUTING.md`](CONTRIBUTING.md) — 貢獻指南
 - [`SECURITY.md`](SECURITY.md) — 安全回報政策
-- [`docs/ezpay-api-mapping.md`](docs/ezpay-api-mapping.md) — 藍新 EZP_INVI_1.2.2 文件 vs SDK 對照表（升版用）
+- [`docs/ezpay-api-mapping.md`](docs/ezpay-api-mapping.md) — 藍新 EZP_INVI_1.2.2 發票文件 vs SDK 對照表（升版用）
+- [`docs/ezpay-track-api-mapping.md`](docs/ezpay-track-api-mapping.md) — 藍新 EZP_Track_1.0.0 字軌文件 vs SDK 對照表
 - [`docs/extending.md`](docs/extending.md) — 擴充新廠商指南（給未來貢獻者）
 
 ## Roadmap

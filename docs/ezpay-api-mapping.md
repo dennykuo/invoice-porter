@@ -1,6 +1,8 @@
 # 藍新電子發票 API 對照（EZP_INVI_1.2.2 vs invoice-porter）
 
-> 本文件僅描述**藍新（NewebPay/EZPay）**。未來其他廠商（綠界 ECPay、歐付寶 O'Pay、紅陽 Pay2Go 等）請見各自的 `docs/<vendor>-api-mapping.md`，擴充慣例見 [`docs/extending.md`](extending.md)。
+> 本文件僅描述**藍新（NewebPay/EZPay）「電子發票」7 個端點（EZP_INVI_1.2.2）**。藍新另有獨立的「電子發票字軌管理」3 個端點（EZP_Track_1.0.0），請見 [`docs/ezpay-track-api-mapping.md`](ezpay-track-api-mapping.md)。
+>
+> 未來其他廠商（綠界 ECPay、歐付寶 O'Pay、紅陽 Pay2Go 等）請見各自的 `docs/<vendor>-api-mapping.md`，擴充慣例見 [`docs/extending.md`](extending.md)。
 
 對應藍新「電子發票串接技術文件」**EZP_INVI_1.2.2**（2024-04-22）。本文件供未來文件版本升級時對照使用，可快速找出哪些 enum / DTO 需要追加或調整。
 
