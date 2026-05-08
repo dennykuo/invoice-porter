@@ -1,2 +1,30 @@
-vendor/
-**/.Ds_Store
+# Dependencies / build
+/vendor/
+/build/
+
+# Tooling caches
+/.phpunit.cache/
+/.phpunit.result.cache
+/.php-cs-fixer.cache
+/.phpstan.cache/
+
+# Composer lock — library 慣例不追蹤
+/composer.lock
+
+# 環境變數 / 憑證（嚴禁進 repo）
+.env
+.env.*
+!.env.example
+/config/
+secrets/
+*.key
+*.pem
+*.crt
+*.p12
+*.pfx
+*.jks
+
+# IDE / OS
+**/.DS_Store
+.idea/
+.vscode/

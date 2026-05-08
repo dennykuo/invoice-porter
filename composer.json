@@ -1,15 +1,35 @@
 {
     "name": "dennykuo/invoice-porter",
-    "description": "藍新電子發票串接",
+    "description": "台灣電子發票串接 PHP SDK，目前支援藍新（NewebPay/EZPay）",
     "type": "library",
     "license": "MIT",
+    "keywords": [
+        "ezpay",
+        "newebpay",
+        "invoice",
+        "e-invoice",
+        "einvoice",
+        "taiwan",
+        "taiwan-einvoice",
+        "藍新",
+        "電子發票"
+    ],
     "authors": [
         {
             "name": "Denny"
         }
     ],
     "require": {
-        "guzzlehttp/guzzle": "^6.5 || ^7.2"
+        "php": "^8.1",
+        "ext-openssl": "*",
+        "ext-json": "*",
+        "guzzlehttp/guzzle": "^7.5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5",
+        "phpstan/phpstan": "^2.0",
+        "friendsofphp/php-cs-fixer": "^3.50",
+        "vlucas/phpdotenv": "^5.6"
     },
     "autoload": {
         "psr-4": {
@@ -17,10 +37,24 @@
         }
     },
     "autoload-dev": {
-        "files": ["src/helpers.php"]
+        "psr-4": {
+            "InvoicePorter\\Tests\\": "tests/"
+        }
     },
-    "require-dev": {
-        "symfony/var-dumper": "^5.0",
-        "phpunit/phpunit": "^9.1"
-    }
+    "scripts": {
+        "test": "phpunit",
+        "test-coverage": "phpunit --coverage-clover build/logs/clover.xml --coverage-html build/coverage-html",
+        "stan": "phpstan analyse",
+        "cs-check": "php-cs-fixer fix --dry-run --diff",
+        "cs-fix": "php-cs-fixer fix",
+        "ci": [
+            "@cs-check",
+            "@stan",
+            "@test"
+        ]
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "stable"
 }
