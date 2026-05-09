@@ -289,15 +289,57 @@ footer a:hover {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 14px 18px;
+    padding: 10px 12px 10px 18px;
     margin-bottom: 22px;
-    font-size: 13px;
     color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+.source-cmd .cmd-text {
+    flex: 1;
+    min-width: 0;
     overflow-x: auto;
     white-space: nowrap;
+    font-size: 13px;
 }
 .source-cmd .prompt { color: var(--text-dim); user-select: none; }
 .source-cmd .cmd { color: var(--accent); }
+.copy-btn {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--surface-2);
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 140ms ease, color 140ms ease, border-color 140ms ease;
+    user-select: none;
+}
+.copy-btn .copy-icon { font-size: 13px; line-height: 1; }
+.copy-btn:hover {
+    color: var(--accent);
+    border-color: var(--accent-soft);
+    background: var(--surface);
+}
+.copy-btn.copied {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--accent-soft);
+}
+.copy-btn.failed {
+    color: #f87171;
+    border-color: #f8717155;
+}
+@media (prefers-reduced-motion: reduce) {
+    .copy-btn { transition: none; }
+}
 .source-code {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -332,8 +374,15 @@ footer a:hover {
             <span class="pill mono">v<?= htmlspecialchars($info['version'], ENT_QUOTES) ?></span>
         <?php } ?>
     </div>
-    <div class="source-cmd mono">
-        <span class="prompt">$ </span><span class="cmd">php demo/<?= htmlspecialchars($viewFile, ENT_QUOTES) ?></span>
+    <?php $cliCmd = 'php demo/' . $viewFile; ?>
+    <div class="source-cmd">
+        <div class="cmd-text mono">
+            <span class="prompt">$ </span><span class="cmd">php demo/<?= htmlspecialchars($viewFile, ENT_QUOTES) ?></span>
+        </div>
+        <button type="button" class="copy-btn" data-copy="<?= htmlspecialchars($cliCmd, ENT_QUOTES) ?>" aria-label="複製命令到剪貼簿">
+            <span class="copy-icon" aria-hidden="true">⧉</span>
+            <span class="copy-label">複製</span>
+        </button>
     </div>
     <div class="source-code"><?php
         if (file_exists($sourcePath)) {
@@ -396,5 +445,61 @@ footer a:hover {
 <?php } ?>
 
 </div>
+<script>
+(function () {
+    var buttons = document.querySelectorAll('.copy-btn');
+    if (buttons.length === 0) return;
+
+    function flash(btn, label, icon, klass, ms) {
+        var labelEl = btn.querySelector('.copy-label');
+        var iconEl = btn.querySelector('.copy-icon');
+        if (!labelEl || !iconEl) return;
+        var origLabel = labelEl.textContent;
+        var origIcon = iconEl.textContent;
+        labelEl.textContent = label;
+        iconEl.textContent = icon;
+        btn.classList.add(klass);
+        setTimeout(function () {
+            labelEl.textContent = origLabel;
+            iconEl.textContent = origIcon;
+            btn.classList.remove(klass);
+        }, ms);
+    }
+
+    function fallbackCopy(text) {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'absolute';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        var ok = false;
+        try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+        document.body.removeChild(ta);
+        return ok;
+    }
+
+    buttons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var cmd = btn.dataset.copy || '';
+            var done = function (success) {
+                if (success) {
+                    flash(btn, '已複製', '✓', 'copied', 1600);
+                } else {
+                    flash(btn, '複製失敗', '⚠', 'failed', 1800);
+                }
+            };
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(cmd).then(function () { done(true); }, function () {
+                    done(fallbackCopy(cmd));
+                });
+            } else {
+                done(fallbackCopy(cmd));
+            }
+        });
+    });
+})();
+</script>
 </body>
 </html>
