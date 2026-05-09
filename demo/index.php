@@ -363,8 +363,13 @@ footer a:hover {
     <?php
     $info = findDemo($demos, $viewFile);
     $sourcePath = __DIR__ . '/' . $viewFile;
+    // 同路徑剝掉 query string，避免「返回列表」連結留下無意義的 ?
+    $listUrl = (string) strtok((string) ($_SERVER['REQUEST_URI'] ?? './'), '?');
+    if ($listUrl === '') {
+        $listUrl = './';
+    }
     ?>
-    <a href="?" class="back-link">← 返回列表</a>
+    <a href="<?= htmlspecialchars($listUrl, ENT_QUOTES) ?>" class="back-link">← 返回列表</a>
     <h1 class="source-head"><?= htmlspecialchars($info['name'] ?? $viewFile, ENT_QUOTES) ?></h1>
     <div class="source-meta">
         <span class="pill mono"><?= htmlspecialchars($viewFile, ENT_QUOTES) ?></span>
