@@ -51,7 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 95 支發票 + ~32 支字軌單元 / 功能測試（含 Crypto、Enum、Request DTO 驗證、Client feature test、錯誤碼對映）
 - PHPStan **level 10**、PHP-CS-Fixer（PSR-12 + `declare_strict_types`）
 - GitHub Actions CI matrix（PHP 8.1 / 8.2 / 8.3）
-- `demo/` 11 支獨立範例（`01-issue` … `08-search-redirect` 為發票，`09-track-create` … `11-track-search` 為字軌）+ `.env.example`
+- `examples/` 11 支獨立範例（`01-issue` … `08-search-redirect` 為發票，`09-track-create` … `11-track-search` 為字軌）+ `.env.example`
 
 ### 文件
 
