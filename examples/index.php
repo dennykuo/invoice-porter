@@ -3,14 +3,14 @@
 declare(strict_types=1);
 
 /**
- * Invoice Porter — demo 索引頁面。
+ * Invoice Porter — examples 索引頁面。
  *
  * 啟動方式：
- *   php -S localhost:8000 -t demo
+ *   php -S localhost:8000 -t examples
  *   瀏覽 http://localhost:8000
  *
- * 注意：實際執行 demo 仍以 CLI 為主（如 `php demo/01-issue.php`）。
- * 本頁僅作索引與原始碼預覽，不在瀏覽器執行 demo（缺 .env 時會炸、輸出也是純文字）。
+ * 注意：實際執行範例仍以 CLI 為主（如 `php examples/01-issue.php`）。
+ * 本頁僅作索引與原始碼預覽，不在瀏覽器執行範例（缺 .env 時會炸、輸出也是純文字）。
  */
 
 $demos = [
@@ -379,10 +379,10 @@ footer a:hover {
             <span class="pill mono">v<?= htmlspecialchars($info['version'], ENT_QUOTES) ?></span>
         <?php } ?>
     </div>
-    <?php $cliCmd = 'php demo/' . $viewFile; ?>
+    <?php $cliCmd = 'php examples/' . $viewFile; ?>
     <div class="source-cmd">
         <div class="cmd-text mono">
-            <span class="prompt">$ </span><span class="cmd">php demo/<?= htmlspecialchars($viewFile, ENT_QUOTES) ?></span>
+            <span class="prompt">$ </span><span class="cmd">php examples/<?= htmlspecialchars($viewFile, ENT_QUOTES) ?></span>
         </div>
         <button type="button" class="copy-btn" data-copy="<?= htmlspecialchars($cliCmd, ENT_QUOTES) ?>" aria-label="複製命令到剪貼簿">
             <span class="copy-icon" aria-hidden="true">⧉</span>
@@ -404,8 +404,8 @@ footer a:hover {
 </header>
 
 <div class="hint">
-    <strong>使用前</strong>　複製 <code>demo/.env.example</code> 為 <code>demo/.env</code> 並填入測試憑證，
-    再以 CLI 執行：<code>php demo/01-issue.php</code>。本頁僅作索引與原始碼預覽。
+    <strong>使用前</strong>　複製 <code>examples/.env.example</code> 為 <code>examples/.env</code> 並填入測試憑證，
+    再以 CLI 執行：<code>php examples/01-issue.php</code>。本頁僅作索引與原始碼預覽。
 </div>
 
 <?php foreach ($demos as $key => $group) { ?>
@@ -437,7 +437,7 @@ footer a:hover {
 <?php } ?>
 
 <footer>
-    <span>11 demos · 2 modules · <span class="mono">php -S localhost:8000 -t demo</span></span>
+    <span>11 demos · 2 modules · <span class="mono">php -S localhost:8000 -t examples</span></span>
     <span>
         <a href="https://github.com/dennykuo/invoice-porter" target="_blank" rel="noopener">GitHub</a>
         &nbsp;·&nbsp;
