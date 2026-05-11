@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-首次發布前的整備版本。涵蓋藍新 EZPay 全部 7 個發票 / 折讓端點 + 3 個字軌管理端點，並預留多廠商擴充空間（綠界 ECPay、歐付寶 O'Pay、紅陽 Pay2Go 等）。
+## [0.3.0] - 2026-05-11
+
+首次發布版本。涵蓋藍新 EZPay 全部 7 個發票 / 折讓端點 + 3 個字軌管理端點，並預留多廠商擴充空間（綠界 ECPay、歐付寶 O'Pay、紅陽 Pay2Go 等）。
 
 ### 端點覆蓋（EZP_INVI_1.2.2，2024-04-22）
 
