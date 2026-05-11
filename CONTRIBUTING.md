@@ -46,7 +46,7 @@ composer ci   # cs-check + phpstan level 10 + phpunit
 
 ## 測試憑證
 
-**禁止**把任何實際藍新（或其他廠商）測試憑證寫死在 `tests/` 或 `demo/` 內。請用明顯的 dummy 值，例如：
+**禁止**把任何實際藍新（或其他廠商）測試憑證寫死在 `tests/` 或 `examples/` 內。請用明顯的 dummy 值，例如：
 
 ```php
 private const HASH_KEY = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';  // 32 個 a
@@ -54,7 +54,7 @@ private const HASH_IV  = 'bbbbbbbbbbbbbbbb';                  // 16 個 b
 private const MERCHANT_ID = '00000000';
 ```
 
-`demo/.env` 已被 gitignore，請放在 `.env` 內絕對不要 commit。
+`examples/.env` 已被 gitignore，請放在 `.env` 內絕對不要 commit。
 
 ## 安全回報
 
