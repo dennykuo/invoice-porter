@@ -41,6 +41,11 @@ final class AllowanceIssueResponse extends EzpayResponse
         return $this->string('CreateTime');
     }
 
+    public function createTimeAt(): ?\DateTimeImmutable
+    {
+        return $this->parseDateTime($this->createTime());
+    }
+
     public function checkCode(): ?string
     {
         return $this->string('CheckCode');

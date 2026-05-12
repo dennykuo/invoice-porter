@@ -8,6 +8,8 @@ use InvoicePorter\Ezpay\Enums\AllowanceConfirmStatus;
 use InvoicePorter\Ezpay\Exceptions\EzpayValidationException;
 use InvoicePorter\Ezpay\Requests\Items\AllowanceItem;
 use InvoicePorter\Ezpay\Responses\AllowanceIssueResponse;
+use InvoicePorter\Ezpay\Validation\BuyerEmailValidator;
+use InvoicePorter\Ezpay\Validation\MerchantOrderNoValidator;
 
 final class AllowanceIssueRequest extends EzpayRequest
 {
@@ -28,9 +30,7 @@ final class AllowanceIssueRequest extends EzpayRequest
         if ($invoiceNo === '') {
             throw new EzpayValidationException('invoiceNo 不可為空');
         }
-        if ($merchantOrderNo === '') {
-            throw new EzpayValidationException('merchantOrderNo 不可為空');
-        }
+        MerchantOrderNoValidator::assert($merchantOrderNo);
         if ($totalAmount <= 0) {
             throw new EzpayValidationException('totalAmount 必須大於 0');
         }
@@ -45,9 +45,7 @@ final class AllowanceIssueRequest extends EzpayRequest
                 throw new EzpayValidationException('items 必須為 AllowanceItem 集合');
             }
         }
-        if ($buyerEmail !== null && $buyerEmail !== '' && !filter_var($buyerEmail, FILTER_VALIDATE_EMAIL)) {
-            throw new EzpayValidationException('buyerEmail 格式錯誤');
-        }
+        BuyerEmailValidator::assert($buyerEmail);
     }
 
     public function uri(): string

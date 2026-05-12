@@ -8,6 +8,7 @@ use InvoicePorter\Ezpay\Enums\DisplayFlag;
 use InvoicePorter\Ezpay\Enums\SearchType;
 use InvoicePorter\Ezpay\Exceptions\EzpayValidationException;
 use InvoicePorter\Ezpay\Responses\InvoiceSearchResponse;
+use InvoicePorter\Ezpay\Validation\MerchantOrderNoValidator;
 
 final class InvoiceSearchRequest extends EzpayRequest
 {
@@ -19,9 +20,7 @@ final class InvoiceSearchRequest extends EzpayRequest
         public readonly int|float|null $totalAmount = null,
         public readonly ?DisplayFlag $displayFlag = null,
     ) {
-        if ($merchantOrderNo === '') {
-            throw new EzpayValidationException('merchantOrderNo 不可為空');
-        }
+        MerchantOrderNoValidator::assert($merchantOrderNo);
         if ($searchType === SearchType::ByInvoiceNumber) {
             if ($invoiceNumber === null || $invoiceNumber === '') {
                 throw new EzpayValidationException('SearchType=0 (InvoiceNumber) 必須提供 invoiceNumber');

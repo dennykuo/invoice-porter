@@ -62,4 +62,15 @@ final class InvoiceSearchRequestTest extends TestCase
 
         $this->assertNotNull($request->checkCodeFields());
     }
+
+    public function testRejectsHyphenInMerchantOrderNo(): void
+    {
+        $this->expectException(EzpayValidationException::class);
+        $this->expectExceptionMessage('英文、數字、底線');
+
+        new InvoiceSearchRequest(
+            searchType: SearchType::ByMerchantOrderNo,
+            merchantOrderNo: 'ORD-001',
+        );
+    }
 }

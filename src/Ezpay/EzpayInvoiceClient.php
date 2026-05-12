@@ -7,6 +7,8 @@ namespace InvoicePorter\Ezpay;
 use GuzzleHttp\HandlerStack;
 use InvoicePorter\Ezpay\Crypto\AesCryptor;
 use InvoicePorter\Ezpay\Crypto\SignatureVerifier;
+use InvoicePorter\Ezpay\Enums\DisplayFlag;
+use InvoicePorter\Ezpay\Enums\SearchType;
 use InvoicePorter\Ezpay\Exceptions\EzpayApiException;
 use InvoicePorter\Ezpay\Exceptions\EzpayCheckCodeException;
 use InvoicePorter\Ezpay\Exceptions\EzpayTransportException;
@@ -111,13 +113,26 @@ final class EzpayInvoiceClient
     }
 
     /**
-     * @deprecated 請改用 searchRedirectHtml() 方便框架包裝。此函式會 echo + exit。
-     * @return never
+     * 產生「導向藍新公開發票查詢頁」的自動 submit form HTML。
+     *
+     * 藍新公開查詢頁採 form-post（非 GET URL），所以本方法回 HTML 字串而非 URL；
+     * 框架 Controller 可直接 echo 或 return。內部組裝 `SearchType::ByInvoiceNumber`
+     * + `DisplayFlag::Redirect` 的 `InvoiceSearchRequest` 後委派給 `searchRedirectHtml()`。
      */
-    public function searchRedirectExit(InvoiceSearchRequest $request): void
-    {
-        echo $this->searchRedirectHtml($request);
-        exit;
+    public function publicQueryRedirectHtml(
+        string $invoiceNumber,
+        string $randomNum,
+        string $merchantOrderNo,
+        int|float $totalAmount,
+    ): string {
+        return $this->searchRedirectHtml(new InvoiceSearchRequest(
+            searchType: SearchType::ByInvoiceNumber,
+            merchantOrderNo: $merchantOrderNo,
+            invoiceNumber: $invoiceNumber,
+            randomNum: $randomNum,
+            totalAmount: $totalAmount,
+            displayFlag: DisplayFlag::Redirect,
+        ));
     }
 
     private function send(EzpayRequest $request): EzpayResponse

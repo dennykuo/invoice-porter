@@ -11,7 +11,7 @@ $client = require __DIR__ . '/_bootstrap.php';
 try {
     $response = $client->issueAllowance(new AllowanceIssueRequest(
         invoiceNo: 'AA00000076',
-        merchantOrderNo: 'ORD-CHANGE-ME',
+        merchantOrderNo: 'ORD_CHANGE_ME',
         totalAmount: 100,
         taxAmount: 5,
         items: [

@@ -58,4 +58,22 @@ abstract class EzpayResponse
         }
         return $value;
     }
+
+    /**
+     * 將藍新回傳的 `Y-m-d H:i:s` 字串轉為 `DateTimeImmutable`。
+     *
+     * 使用 PHP `date_default_timezone_get()` 之預設時區；如需 Asia/Taipei
+     * 請呼叫端自行 `->setTimezone(new \DateTimeZone('Asia/Taipei'))`。
+     * 解析失敗或欄位缺則回 `null`（不丟例外）。
+     */
+    protected function parseDateTime(?string $value): ?\DateTimeImmutable
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        $dt = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $value);
+
+        return $dt instanceof \DateTimeImmutable ? $dt : null;
+    }
 }

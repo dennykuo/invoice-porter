@@ -30,4 +30,9 @@ final class AllowanceTouchIssueResponse extends EzpayResponse
     {
         return $this->string('CreateTime');
     }
+
+    public function createTimeAt(): ?\DateTimeImmutable
+    {
+        return $this->parseDateTime($this->createTime());
+    }
 }
