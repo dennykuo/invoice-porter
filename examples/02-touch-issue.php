@@ -9,7 +9,7 @@ $client = require __DIR__ . '/_bootstrap.php';
 
 try {
     $response = $client->touchIssue(new InvoiceTouchIssueRequest(
-        merchantOrderNo: 'ORD-CHANGE-ME',
+        merchantOrderNo: 'ORD_CHANGE_ME',
         totalAmount: 500,
     ));
 

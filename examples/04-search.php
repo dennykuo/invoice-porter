@@ -11,7 +11,7 @@ $client = require __DIR__ . '/_bootstrap.php';
 try {
     $response = $client->search(new InvoiceSearchRequest(
         searchType: SearchType::ByInvoiceNumber,
-        merchantOrderNo: 'ORD-CHANGE-ME',
+        merchantOrderNo: 'ORD_CHANGE_ME',
         invoiceNumber: 'AA00000076',
         randomNum: '0991',
     ));

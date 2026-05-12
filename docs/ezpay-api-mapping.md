@@ -91,6 +91,73 @@ InvoiceException (abstract, RuntimeException)        # 跨廠商共用根
 
 完整清單請見藍新文件附錄三。
 
+## 欄位規格 vs SDK 驗證 cheatsheet
+
+> 以下整理「**藍新規格上有但 SDK 不一定有擋下**」的欄位，免去逐條翻官方 PDF。✅ = SDK 會在 `new XxxRequest(...)` 直接擋下；❌ = SDK 不檢查，會由藍新後端在送出後打回；➖ = 不適用。
+>
+> SDK 採「**有規格就擋，沒規格不擋**」策略 — 規格不明的欄位（如 Member 載具）只擋空 / 過長等基本保險。
+
+### MerchantOrderNo
+
+| 規則 | 規格 | SDK | 出處 |
+|------|------|-----|------|
+| 必填 | 是 | ✅ | `MerchantOrderNoValidator::assert()` |
+| 長度 | Varchar(20) | ✅ | `MerchantOrderNoValidator::MAX_LENGTH` |
+| 字元集 | `[A-Za-z0-9_]+` | ✅ | `MerchantOrderNoValidator::PATTERN` |
+| 統一驗證點 | — | ✅ | 4 個 Request 統一呼叫此 validator（0.4.1 起） |
+
+### InvoiceIssueRequest 買方欄位
+
+| 欄位 | 規格 | SDK | 備註 |
+|------|------|-----|------|
+| `BuyerName` | Varchar(60) | ✅ 長度（mb_strlen） | `InvoiceIssueRequest::BUYER_NAME_MAX_LENGTH` |
+| `BuyerAddress` | Varchar(100) | ✅ 長度（mb_strlen） | `InvoiceIssueRequest::BUYER_ADDRESS_MAX_LENGTH` |
+| `BuyerEmail` | Varchar(80) | ✅ 格式 + 長度 | `filter_var` + `BUYER_EMAIL_MAX_LENGTH` |
+| `BuyerUBN` | 8 碼純數字 | ✅ regex `/^\d{8}$/` | B2B 必填亦由 SDK 擋下 |
+
+### 載具 / 愛心碼
+
+| 欄位 | 規格 | SDK | 備註 |
+|------|------|-----|------|
+| `LoveCode` | 3–7 碼純數字 | ✅ regex `/^\d{3,7}$/` | |
+| `CarrierNum`（手機條碼） | `/^\/[A-Z0-9.\-+]{7}$/` | ✅ | `CarrierType::Mobile` |
+| `CarrierNum`（自然人憑證） | `/^[A-Z]{2}\d{14}$/` | ✅ | `CarrierType::CitizenDigitalCertificate` |
+| `CarrierNum`（會員載具） | 廠商自訂 | ⚠️ 僅擋長度 ≤ 64 | `CARRIER_NUM_MEMBER_MAX_LENGTH` |
+
+### 品項與其他
+
+| 欄位 | 規格 | SDK | 備註 |
+|------|------|-----|------|
+| `InvoiceItem.name` / `AllowanceItem.name` | Varchar(30)，不可含 `\|` | ✅ 長度 + `\|` 檢查 | `InvoiceItemFieldValidator::assertName()` |
+| `InvoiceItem.unit` / `AllowanceItem.unit` | 不可含 `\|` | ✅ | 多 item 以 `\|` 串接送出，含此字元會 silent corruption |
+| `Comment` | Varchar(200) | ✅ 長度（mb_strlen） | `InvoiceIssueRequest::COMMENT_MAX_LENGTH` |
+| `InvalidReason`（作廢理由） | Varchar(20) | ✅ 長度（mb_strlen） | 中文一字算一字 |
+
+### 跨欄位 invariants
+
+> 規格上「同時送會被退」「擇一」「互斥」的硬約束。✅ = SDK 在 constructor 直接擋下；❌ = 由藍新後端打回。
+
+| 規則 | SDK | 自版本 |
+|------|-----|-------|
+| B2B → `buyerUbn` 必填 | ✅ | 0.3.0 |
+| Status=3 → `createStatusTime` 必填 | ✅ | 0.3.0 |
+| **B2C + `PrintFlag::No` → 必須提供 carrier 或 loveCode（全 TaxType）** | ✅ | 0.5.0（過去 0.4.0 只擋 Taxable） |
+| **載具（carrier）與捐贈碼（loveCode）互斥** | ✅ | 0.5.0 |
+| **B2B 不可使用載具** | ✅ | 0.5.0 |
+| **B2B 不可使用捐贈碼** | ✅ | 0.5.0 |
+| **`carrierType` / `carrierNum` 必須同時提供或同時省略** | ✅ explicit error | 0.5.0（過去 silent treat as missing） |
+| TaxType=9（Mixed）→ 每個 item 必須給 `taxType` | ❌（藍新後端會打回；待補） | — |
+| `Amt` + `TaxAmt` = `TotalAmt` | ❌（呼叫端自行計算） | — |
+
+### 必填欄位（無預設）
+
+| 欄位 | 必填自 | 備註 |
+|------|-------|------|
+| `status` / `merchantOrderNo` / `category` / `taxType` / `amount` / `taxAmount` / `totalAmount` / `items` | 0.3.0 | constructor 第 1–8 個參數 |
+| **`printFlag`** | 0.5.0 | 0.4.x 預設 `PrintFlag::No`，配 B2C 強制 carrier/loveCode 成為「預設陷阱」，故移除預設改必填 |
+
+> 「❌」欄位不代表永遠不該擋，而是當前沒擋 — 視踩雷頻率決定是否補。歡迎以 PR 補強。
+
 ## 對應的藍新文件版本
 
 目前實作對應 **EZP_INVI_1.2.2（2024-04-22）**：全 7 端點覆蓋；`invoice_issue` v1.5（含 `KioskPrintFlag`）、`invoice_search` v1.3（含 `DisplayFlag=2`）。

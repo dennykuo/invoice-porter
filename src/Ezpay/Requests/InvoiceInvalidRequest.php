@@ -6,6 +6,7 @@ namespace InvoicePorter\Ezpay\Requests;
 
 use InvoicePorter\Ezpay\Exceptions\EzpayValidationException;
 use InvoicePorter\Ezpay\Responses\InvoiceInvalidResponse;
+use InvoicePorter\Ezpay\Validation\InvalidReasonValidator;
 
 /**
  * 作廢發票。藍新對此 API 的回應未提供 CheckCode 計算所需 5 欄完整資訊；
@@ -24,12 +25,7 @@ final class InvoiceInvalidRequest extends EzpayRequest
         if ($invoiceNumber === '') {
             throw new EzpayValidationException('invoiceNumber 不可為空');
         }
-        if (mb_strlen($invalidReason) > 20) {
-            throw new EzpayValidationException('invalidReason 長度不可超過 20');
-        }
-        if ($invalidReason === '') {
-            throw new EzpayValidationException('invalidReason 不可為空');
-        }
+        InvalidReasonValidator::assert($invalidReason);
     }
 
     public function uri(): string

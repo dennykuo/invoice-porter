@@ -169,6 +169,94 @@ final class EzpayConfigTest extends TestCase
         $this->assertSame('12345678', $config->companyId);
     }
 
+    public function testFromArrayWithMinimalKeys(): void
+    {
+        $config = EzpayConfig::fromArray([
+            'merchant_id' => '00000000',
+            'hash_key' => str_repeat('a', 32),
+            'hash_iv' => str_repeat('b', 16),
+        ]);
+
+        $this->assertSame('00000000', $config->merchantId);
+        $this->assertSame(Environment::Sandbox, $config->environment);
+        $this->assertNull($config->companyId);
+    }
+
+    public function testFromArrayWithAllKeys(): void
+    {
+        $config = EzpayConfig::fromArray([
+            'merchant_id' => '00000000',
+            'hash_key' => str_repeat('a', 32),
+            'hash_iv' => str_repeat('b', 16),
+            'environment' => 'production',
+            'timeout_seconds' => 7.5,
+            'connect_timeout_seconds' => 3.5,
+            'company_id' => 'COMP-1',
+            'company_hash_key' => str_repeat('c', 32),
+            'company_hash_iv' => str_repeat('d', 16),
+        ]);
+
+        $this->assertSame(Environment::Production, $config->environment);
+        $this->assertSame(7.5, $config->timeoutSeconds);
+        $this->assertSame(3.5, $config->connectTimeoutSeconds);
+        $this->assertSame('COMP-1', $config->companyId);
+        $this->assertSame(str_repeat('c', 32), $config->companyHashKey);
+        $this->assertSame(str_repeat('d', 16), $config->companyHashIv);
+    }
+
+    public function testFromArrayThrowsOnMissingRequired(): void
+    {
+        try {
+            EzpayConfig::fromArray([
+                'merchant_id' => '00000000',
+                // hash_key 缺
+                'hash_iv' => str_repeat('b', 16),
+            ]);
+            $this->fail('預期應拋出 EzpayValidationException');
+        } catch (EzpayValidationException $e) {
+            $this->assertStringContainsString('hash_key', $e->getMessage());
+        }
+    }
+
+    public function testFromArrayUnknownEnvironmentDefaultsToSandbox(): void
+    {
+        $config = EzpayConfig::fromArray([
+            'merchant_id' => '00000000',
+            'hash_key' => str_repeat('a', 32),
+            'hash_iv' => str_repeat('b', 16),
+            'environment' => 'wat',
+        ]);
+
+        $this->assertSame(Environment::Sandbox, $config->environment);
+    }
+
+    public function testFromArrayIgnoresUnknownKeys(): void
+    {
+        $config = EzpayConfig::fromArray([
+            'merchant_id' => '00000000',
+            'hash_key' => str_repeat('a', 32),
+            'hash_iv' => str_repeat('b', 16),
+            'logging' => true,
+            'cache_ttl' => 600,
+        ]);
+
+        $this->assertSame('00000000', $config->merchantId);
+    }
+
+    public function testFromArrayCastsTimeoutToFloat(): void
+    {
+        $config = EzpayConfig::fromArray([
+            'merchant_id' => '00000000',
+            'hash_key' => str_repeat('a', 32),
+            'hash_iv' => str_repeat('b', 16),
+            'timeout_seconds' => 10,           // int → float
+            'connect_timeout_seconds' => '4',  // numeric string → float
+        ]);
+
+        $this->assertSame(10.0, $config->timeoutSeconds);
+        $this->assertSame(4.0, $config->connectTimeoutSeconds);
+    }
+
     public function testFromEnvReadsCompanyKeysWhenAvailable(): void
     {
         $previous = [

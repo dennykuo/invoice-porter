@@ -6,6 +6,7 @@ namespace InvoicePorter\Ezpay\Requests;
 
 use InvoicePorter\Ezpay\Exceptions\EzpayValidationException;
 use InvoicePorter\Ezpay\Responses\AllowanceInvalidResponse;
+use InvoicePorter\Ezpay\Validation\InvalidReasonValidator;
 
 final class AllowanceInvalidRequest extends EzpayRequest
 {
@@ -17,12 +18,7 @@ final class AllowanceInvalidRequest extends EzpayRequest
         if ($allowanceNo === '') {
             throw new EzpayValidationException('allowanceNo 不可為空');
         }
-        if ($invalidReason === '') {
-            throw new EzpayValidationException('invalidReason 不可為空');
-        }
-        if (mb_strlen($invalidReason) > 20) {
-            throw new EzpayValidationException('invalidReason 長度不可超過 20');
-        }
+        InvalidReasonValidator::assert($invalidReason);
     }
 
     public function uri(): string

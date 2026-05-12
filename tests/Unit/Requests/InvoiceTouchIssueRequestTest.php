@@ -36,4 +36,13 @@ final class InvoiceTouchIssueRequestTest extends TestCase
         $this->expectException(EzpayValidationException::class);
         new InvoiceTouchIssueRequest(merchantOrderNo: 'X', totalAmount: 0);
     }
+
+    public function testRejectsHyphenInMerchantOrderNo(): void
+    {
+        // 統一走 MerchantOrderNoValidator（過去此 Request 只查空，是漂移之一）
+        $this->expectException(EzpayValidationException::class);
+        $this->expectExceptionMessage('英文、數字、底線');
+
+        new InvoiceTouchIssueRequest(merchantOrderNo: 'ORD-001', totalAmount: 500);
+    }
 }

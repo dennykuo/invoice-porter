@@ -7,6 +7,7 @@ namespace InvoicePorter\Tests\Feature\Client;
 use GuzzleHttp\Psr7\Response;
 use InvoicePorter\Ezpay\Enums\Category;
 use InvoicePorter\Ezpay\Enums\InvoiceStatus;
+use InvoicePorter\Ezpay\Enums\PrintFlag;
 use InvoicePorter\Ezpay\Enums\TaxType;
 use InvoicePorter\Ezpay\Exceptions\EzpayApiException;
 use InvoicePorter\Ezpay\Exceptions\EzpayCheckCodeException;
@@ -95,6 +96,8 @@ final class ClientIssueTest extends ClientTestCase
             taxAmount: 24,
             totalAmount: 500,
             items: [new InvoiceItem(name: '商品一', count: 1, unit: '個', price: 500, amount: 500)],
+            printFlag: PrintFlag::No,
+            loveCode: '13994',
         );
     }
 }

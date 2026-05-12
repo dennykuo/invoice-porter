@@ -20,4 +20,9 @@ final class AllowanceInvalidResponse extends EzpayResponse
     {
         return $this->string('CreateTime');
     }
+
+    public function invalidTimeAt(): ?\DateTimeImmutable
+    {
+        return $this->parseDateTime($this->invalidTime());
+    }
 }

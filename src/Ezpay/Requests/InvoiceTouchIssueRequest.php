@@ -6,6 +6,7 @@ namespace InvoicePorter\Ezpay\Requests;
 
 use InvoicePorter\Ezpay\Exceptions\EzpayValidationException;
 use InvoicePorter\Ezpay\Responses\InvoiceTouchIssueResponse;
+use InvoicePorter\Ezpay\Validation\MerchantOrderNoValidator;
 
 final class InvoiceTouchIssueRequest extends EzpayRequest
 {
@@ -13,9 +14,7 @@ final class InvoiceTouchIssueRequest extends EzpayRequest
         public readonly string $merchantOrderNo,
         public readonly int|float $totalAmount,
     ) {
-        if ($merchantOrderNo === '') {
-            throw new EzpayValidationException('merchantOrderNo 不可為空');
-        }
+        MerchantOrderNoValidator::assert($merchantOrderNo);
         if ($totalAmount <= 0) {
             throw new EzpayValidationException('totalAmount 必須大於 0');
         }

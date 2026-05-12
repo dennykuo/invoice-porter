@@ -19,7 +19,7 @@ $tax = $totalAmount - $amount;
 
 $request = new InvoiceIssueRequest(
     status: InvoiceStatus::Immediate,
-    merchantOrderNo: 'ORD-' . date('YmdHis'),
+    merchantOrderNo: 'ORD_' . date('YmdHis'),
     category: Category::B2C,
     taxType: TaxType::Taxable,
     amount: $amount,
@@ -30,6 +30,8 @@ $request = new InvoiceIssueRequest(
     ],
     printFlag: PrintFlag::No,
     buyerEmail: 'demo@example.com',
+    // B2C + PrintFlag=N 時 SDK 會要求 carrier 或 loveCode 擇一；此處示範捐贈碼。
+    loveCode: '13994',
 );
 
 try {
