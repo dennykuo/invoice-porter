@@ -96,6 +96,15 @@ InvoiceException (abstract, RuntimeException)        # 跨廠商共用根
 > 以下整理「**藍新規格上有但 SDK 不一定有擋下**」的欄位，免去逐條翻官方 PDF。✅ = SDK 會在 `new XxxRequest(...)` 直接擋下；❌ = SDK 不檢查，會由藍新後端在送出後打回；➖ = 不適用。
 >
 > SDK 採「**有規格就擋，沒規格不擋**」策略 — 規格不明的欄位（如 Member 載具）只擋空 / 過長等基本保險。
+>
+> **Validator class 集中管理（0.4.1 起逐步抽出）**：跨 Request 共用的欄位驗證集中於 `Ezpay\Validation\*`，避免多份 Request 各驗各的造成漂移。常數（如 `MAX_LENGTH` / `PATTERN`）以 `public const` 暴露供呼叫端做 UI 前置檢查。
+>
+> | Validator | 引入版本 | 覆蓋 Request |
+> |---|---|---|
+> | `MerchantOrderNoValidator` | 0.4.1 | 4 個 Request（Issue / TouchIssue / Search / AllowanceIssue） |
+> | `InvoiceItemFieldValidator` | 0.4.1 | `InvoiceItem` / `AllowanceItem` |
+> | `BuyerEmailValidator` | 0.5.1 | `InvoiceIssueRequest` / `AllowanceIssueRequest`（後者過去漏 80 字長度檢查） |
+> | `InvalidReasonValidator` | 0.5.1 | `InvoiceInvalidRequest` / `AllowanceInvalidRequest` |
 
 ### MerchantOrderNo
 
@@ -112,7 +121,7 @@ InvoiceException (abstract, RuntimeException)        # 跨廠商共用根
 |------|------|-----|------|
 | `BuyerName` | Varchar(60) | ✅ 長度（mb_strlen） | `InvoiceIssueRequest::BUYER_NAME_MAX_LENGTH` |
 | `BuyerAddress` | Varchar(100) | ✅ 長度（mb_strlen） | `InvoiceIssueRequest::BUYER_ADDRESS_MAX_LENGTH` |
-| `BuyerEmail` | Varchar(80) | ✅ 格式 + 長度 | `filter_var` + `BUYER_EMAIL_MAX_LENGTH` |
+| `BuyerEmail` | Varchar(80) | ✅ 格式 + 長度 | 0.5.1 起由 `BuyerEmailValidator::assert()` 統一驗證；`BuyerEmailValidator::MAX_LENGTH = 80`（`InvoiceIssueRequest::BUYER_EMAIL_MAX_LENGTH` 已 `@deprecated`，0.6.0 將移除） |
 | `BuyerUBN` | 8 碼純數字 | ✅ regex `/^\d{8}$/` | B2B 必填亦由 SDK 擋下 |
 
 ### 載具 / 愛心碼
@@ -128,10 +137,10 @@ InvoiceException (abstract, RuntimeException)        # 跨廠商共用根
 
 | 欄位 | 規格 | SDK | 備註 |
 |------|------|-----|------|
-| `InvoiceItem.name` / `AllowanceItem.name` | Varchar(30)，不可含 `\|` | ✅ 長度 + `\|` 檢查 | `InvoiceItemFieldValidator::assertName()` |
-| `InvoiceItem.unit` / `AllowanceItem.unit` | 不可含 `\|` | ✅ | 多 item 以 `\|` 串接送出，含此字元會 silent corruption |
+| `InvoiceItem.name` / `AllowanceItem.name` | Varchar(30)，不可含 `\|` | ✅ 長度 + `\|` 檢查 | `InvoiceItemFieldValidator::assertInvoiceItemName()` / `assertAllowanceItemName()`（0.5.1 起對外 method 對應「具體欄位」，呼叫端不必傳 label） |
+| `InvoiceItem.unit` / `AllowanceItem.unit` | 不可含 `\|` | ✅ | `InvoiceItemFieldValidator::assertInvoiceItemUnit()` / `assertAllowanceItemUnit()`；多 item 以 `\|` 串接送出，含此字元會 silent corruption |
 | `Comment` | Varchar(200) | ✅ 長度（mb_strlen） | `InvoiceIssueRequest::COMMENT_MAX_LENGTH` |
-| `InvalidReason`（作廢理由） | Varchar(20) | ✅ 長度（mb_strlen） | 中文一字算一字 |
+| `InvalidReason`（作廢理由） | Varchar(20) | ✅ 長度（mb_strlen） | 0.5.1 起由 `InvalidReasonValidator::assert()` 統一驗證（`InvoiceInvalidRequest` / `AllowanceInvalidRequest` 共用）；中文一字算一字 |
 
 ### 跨欄位 invariants
 

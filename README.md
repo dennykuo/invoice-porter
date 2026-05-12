@@ -165,7 +165,7 @@ echo $response->managementNo();  // 新增成功後的字軌管理編號
 
 ## 使用範例
 
-`examples/01-issue.php` … `examples/08-search-redirect.php` 已涵蓋全部端點。下列為各方法的最小呼叫片段，省略 `use` 行；類別都在 `InvoicePorter\Ezpay\Requests\…`、`InvoicePorter\Ezpay\Enums\…`、`InvoicePorter\Ezpay\Requests\Items\…`。
+`examples/` 共 11 支獨立範例：`01-issue.php` … `08-search-redirect.php` 為發票 7 端點，`09-track-create.php` … `11-track-search.php` 為字軌 3 端點。下列為各方法的最小呼叫片段，省略 `use` 行；類別都在 `InvoicePorter\Ezpay\Requests\…`、`InvoicePorter\Ezpay\Enums\…`、`InvoicePorter\Ezpay\Requests\Items\…`。
 
 ### 觸發開立 / 作廢 / 折讓系列
 
